@@ -1,0 +1,158 @@
+nohup: ignoring input
+Using backend: pytorch
+Generate complex graph...
+Generate complex graph...
+Generate complex graph...
+the number of train data: 108
+the number of valid data: 41
+the number of test data: 49
+number of parameters :  1664822
+DTIPredictorV4_V2(
+  (cov_graph): ModifiedAttentiveFPPredictorV2(
+    (gnn): ModifiedAttentiveFPGNNV2(
+      (init_context): GetContext(
+        (project_node): Sequential(
+          (0): Linear(in_features=40, out_features=256, bias=True)
+          (1): LeakyReLU(negative_slope=0.01)
+        )
+        (project_edge1): Sequential(
+          (0): Linear(in_features=61, out_features=256, bias=True)
+          (1): LeakyReLU(negative_slope=0.01)
+        )
+        (project_edge2): Sequential(
+          (0): Dropout(p=0.1, inplace=False)
+          (1): Linear(in_features=512, out_features=1, bias=True)
+          (2): LeakyReLU(negative_slope=0.01)
+        )
+        (attentive_gru): AttentiveGRU1(
+          (edge_transform): Sequential(
+            (0): Dropout(p=0.1, inplace=False)
+            (1): Linear(in_features=256, out_features=256, bias=True)
+          )
+          (gru): GRUCell(256, 256)
+        )
+      )
+      (gnn_layers): ModuleList(
+        (0): GNNLayer(
+          (project_edge): Sequential(
+            (0): Dropout(p=0.1, inplace=False)
+            (1): Linear(in_features=512, out_features=1, bias=True)
+            (2): LeakyReLU(negative_slope=0.01)
+          )
+          (attentive_gru): AttentiveGRU2(
+            (project_node): Sequential(
+              (0): Dropout(p=0.1, inplace=False)
+              (1): Linear(in_features=256, out_features=256, bias=True)
+            )
+            (gru): GRUCell(256, 256)
+          )
+          (bn_layer): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (1): GNNLayer(
+          (project_edge): Sequential(
+            (0): Dropout(p=0.1, inplace=False)
+            (1): Linear(in_features=512, out_features=1, bias=True)
+            (2): LeakyReLU(negative_slope=0.01)
+          )
+          (attentive_gru): AttentiveGRU2(
+            (project_node): Sequential(
+              (0): Dropout(p=0.1, inplace=False)
+              (1): Linear(in_features=256, out_features=256, bias=True)
+            )
+            (gru): GRUCell(256, 256)
+          )
+          (bn_layer): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+    )
+    (predict): Sequential(
+      (0): Dropout(p=0.1, inplace=False)
+      (1): Linear(in_features=256, out_features=1, bias=True)
+    )
+  )
+  (noncov_graph): DTIConvGraph3Layer(
+    (grah_conv): DTIConvGraph3(
+      (mpl): Sequential(
+        (0): Linear(in_features=257, out_features=200, bias=True)
+        (1): LeakyReLU(negative_slope=0.01)
+        (2): Linear(in_features=200, out_features=200, bias=True)
+        (3): LeakyReLU(negative_slope=0.01)
+        (4): Linear(in_features=200, out_features=200, bias=True)
+        (5): LeakyReLU(negative_slope=0.01)
+      )
+    )
+    (dropout): Dropout(p=0.1, inplace=False)
+    (bn_layer): BatchNorm1d(200, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (FC): FC(
+    (predict): ModuleList(
+      (0): Linear(in_features=400, out_features=200, bias=True)
+      (1): Dropout(p=0.1, inplace=False)
+      (2): LeakyReLU(negative_slope=0.01)
+      (3): BatchNorm1d(200, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (4): Linear(in_features=200, out_features=200, bias=True)
+      (5): Dropout(p=0.1, inplace=False)
+      (6): LeakyReLU(negative_slope=0.01)
+      (7): BatchNorm1d(200, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): Linear(in_features=200, out_features=1, bias=True)
+    )
+  )
+  (readout): EdgeWeightedSumAndMax(
+    (weight_and_sum): EdgeWeightAndSum(
+      (atom_weighting): Sequential(
+        (0): Linear(in_features=200, out_features=1, bias=True)
+        (1): Tanh()
+      )
+    )
+  )
+)
+epoch:0 	 train_rmse:7.0889 	 valid_rmse:6.5536 	 time:0.855 s
+EarlyStopping counter: 1 out of 70
+epoch:1 	 train_rmse:7.1293 	 valid_rmse:6.5921 	 time:0.616 s
+EarlyStopping counter: 2 out of 70
+epoch:2 	 train_rmse:7.1926 	 valid_rmse:6.6542 	 time:0.602 s
+EarlyStopping counter: 3 out of 70
+epoch:3 	 train_rmse:7.2640 	 valid_rmse:6.7245 	 time:0.592 s
+EarlyStopping counter: 4 out of 70
+epoch:4 	 train_rmse:7.3354 	 valid_rmse:6.7946 	 time:0.634 s
+***best 0 model***
+train_rmse:7.0889 	 train_r2:-9.7543 	 train_mae:6.7522 	 train_rp:0.5548
+valid_rmse:6.5536 	 valid_r2:-9.2817 	 valid_mae:6.2274 	 valid_rp:0.4802
+test_rmse:7.1677 	 test_r2:-8.9923 	 test_mae:6.8002 	 test_rp:0.3855
+the number of train data: 108
+the number of valid data: 41
+the number of test data: 49
+number of parameters :  1664822
+epoch:0 	 train_rmse:6.6641 	 valid_rmse:6.1936 	 time:0.604 s
+EarlyStopping counter: 1 out of 70
+epoch:1 	 train_rmse:6.9967 	 valid_rmse:6.4836 	 time:0.616 s
+EarlyStopping counter: 2 out of 70
+epoch:2 	 train_rmse:6.9434 	 valid_rmse:6.4423 	 time:0.610 s
+EarlyStopping counter: 3 out of 70
+epoch:3 	 train_rmse:6.9353 	 valid_rmse:6.4409 	 time:0.600 s
+EarlyStopping counter: 4 out of 70
+epoch:4 	 train_rmse:7.0174 	 valid_rmse:6.5201 	 time:0.608 s
+***best 1 model***
+train_rmse:6.6641 	 train_r2:-8.5041 	 train_mae:6.3463 	 train_rp:0.5802
+valid_rmse:6.1936 	 valid_r2:-8.1831 	 valid_mae:5.8878 	 valid_rp:0.5845
+test_rmse:6.8208 	 test_r2:-8.0486 	 test_mae:6.4657 	 test_rp:0.4865
+the number of train data: 108
+the number of valid data: 41
+the number of test data: 49
+number of parameters :  1664822
+epoch:0 	 train_rmse:7.1664 	 valid_rmse:6.6301 	 time:0.681 s
+EarlyStopping counter: 1 out of 70
+epoch:1 	 train_rmse:7.2524 	 valid_rmse:6.7173 	 time:0.612 s
+EarlyStopping counter: 2 out of 70
+epoch:2 	 train_rmse:7.3053 	 valid_rmse:6.7708 	 time:0.595 s
+EarlyStopping counter: 3 out of 70
+epoch:3 	 train_rmse:7.3605 	 valid_rmse:6.8274 	 time:0.607 s
+EarlyStopping counter: 4 out of 70
+epoch:4 	 train_rmse:7.4119 	 valid_rmse:6.8812 	 time:0.610 s
+***best 2 model***
+train_rmse:7.1664 	 train_r2:-9.9909 	 train_mae:6.8337 	 train_rp:0.4948
+valid_rmse:6.6301 	 valid_r2:-9.5230 	 valid_mae:6.3085 	 valid_rp:0.5288
+test_rmse:7.2447 	 test_r2:-9.2082 	 test_mae:6.8814 	 test_rp:0.3943
+[ 6.97311672 -9.41642864  6.64405282  0.54324015] [0.27043063 0.79893053 0.26108595 0.04383506]
+[ 6.45908991 -8.99591902  6.14122279  0.53119607] [0.2330709  0.71416343 0.22320591 0.05218326]
+[ 7.07773495 -8.74970264  6.71577485  0.42210423] [0.22579836 0.61668255 0.22033411 0.05592364]
