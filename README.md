@@ -32,7 +32,7 @@ We use the well-trained IGN model to predict the binding affinity of complexes g
 ```
 # step 1
 # mol file format conversion
-# the mol2 files in ./examples/mol2_files folder are the conformer generated from docking program
+# the mol2 files in ./examples/mol2_files folder are the conformers generated from docking program
 python3 ./codes/mol2tosdf.py --mol2path ./examples/mol2_files --sdfpath ./examples/sdf_files --num_process 12
 
 # step 2
