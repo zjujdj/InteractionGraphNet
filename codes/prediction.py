@@ -89,7 +89,8 @@ if __name__ == '__main__':
                                                                                      args.gpuid, \
                                                                                      args.num_process, \
                                                                                      args.input_path
-
+    if not os.path.exists('./stats'):
+        os.makedirs('./stats')
 
     keys = os.listdir(input_path)
     labels = []

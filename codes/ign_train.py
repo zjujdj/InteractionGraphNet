@@ -91,6 +91,11 @@ if __name__ == '__main__':
     HOME_PATH = os.getcwd()
     all_data = pd.read_csv('./examples/PDB2016ALL.csv')
 
+    if not os.path.exists(model_save_dir):
+        os.makedirs(model_save_dir)
+    if not os.path.exists('./stats'):
+        os.makedirs('./stats')
+
     # data
     train_dir = './examples/binding_affinity/training/complex'
     valid_dir = './examples/binding_affinity/validation/complex'
