@@ -1,6 +1,5 @@
 # InteractionGraphNet (IGN)
-  InteractionGraphNet: a Novel and Efficient Deep Graph Representation Learning Framework for Accurate Protein-Ligand Interaction Prediction and Large-scale Structure-based Virtual Screening
-
+  InteractionGraphNet: a Novel and Efficient Deep Graph Representation Learning Framework for Accurate Protein-Ligand Interaction Prediction and Large-scale Structure-based Virtual Screening. IGN mainly includes five modules as shown below: graph representation module, intramolecular graph convolution module, intermolecular graph convolution module, graph pooling module and task networks module
 ![error](https://github.com/zjujdj/InteractionGraphNet/blob/master/workflow_new.jpg)
 
 
