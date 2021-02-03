@@ -23,7 +23,7 @@ pip install -r ./env/ign_needs_pip.txt
 ```
 nohup python -u ./codes/ign_train.py --gpuid 0 --epochs 5 --repetitions 3 --lr 0.0001 --l2 0.000001 --dropout 0.1 > ./log/toy_example.log 2>&1 &
 ```
-We added only about data of 200 toy samples in the data folder to explain how to train IGN model. Each sample is saved in a pickle file and it consists of two rdkit objects of a ligand and protein pocket prepared by chimera software. 
+We added only about data of 200 toy samples or so in the data folder to explain how to train IGN model. Each sample is saved in a pickle file and it consists of two rdkit objects of a ligand and protein pocket prepared by chimera software. 
 
 
 # Binding Affinity Prediction 
