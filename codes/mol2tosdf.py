@@ -1,3 +1,5 @@
+# File Name: mol2tosdf.py
+# E-mail: jiang_dj@zju.edu.cn
 import os
 import multiprocessing
 import argparse
