@@ -1,3 +1,5 @@
+# File Name: prediction.py
+# E-mail: jiang_dj@zju.edu.cn
 import rdkit
 from graph_constructor import *
 from utils import *
