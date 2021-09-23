@@ -1,3 +1,5 @@
+# File Name: select_residues.py
+# E-mail: jiang_dj@zju.edu.cn
 import os
 from rdkit import Chem
 import pickle
