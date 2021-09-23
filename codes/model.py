@@ -36,6 +36,82 @@ class FC(nn.Module):
         # return torch.sigmoid(h)
         return h
 
+class DTIConvGraph3(nn.Module):
+    def __init__(self, in_dim, out_dim):
+        super(DTIConvGraph3, self).__init__()
+    # the MPL for update the edge state
+        self.mpl = nn.Sequential(nn.Linear(in_dim, out_dim),
+                                 nn.LeakyReLU(),
+                                 nn.Linear(out_dim, out_dim),
+                                 nn.LeakyReLU(),
+                                 nn.Linear(out_dim, out_dim),
+                                 nn.LeakyReLU())
+
+    def EdgeUpdate(self, edges):
+        return {'e': self.mpl(torch.cat([edges.data['e'], edges.data['m']], dim=1))}
+
+    def forward(self, bg, atom_feats, bond_feats):
+        bg.ndata['h'] = atom_feats
+        bg.edata['e'] = bond_feats
+        with bg.local_scope():
+            bg.apply_edges(dgl.function.u_add_v('h', 'h', 'm'))
+            bg.apply_edges(self.EdgeUpdate)
+            return bg.edata['e']
+
+
+class DTIConvGraph3Layer(nn.Module):
+    def __init__(self, in_dim, out_dim, dropout):  # in_dim = graph module1 output dim + 1
+        super(DTIConvGraph3Layer, self).__init__()
+        # the MPL for update the edge state
+        self.grah_conv = DTIConvGraph3(in_dim, out_dim)
+        self.dropout = nn.Dropout(dropout)
+        self.bn_layer = nn.BatchNorm1d(out_dim)
+
+    def forward(self, bg, atom_feats, bond_feats):
+        new_feats = self.grah_conv(bg, atom_feats, bond_feats)
+        return self.bn_layer(self.dropout(new_feats))
+
+
+class EdgeWeightAndSum(nn.Module):
+    """
+    for normal use, please delete the 'temporary version' line and meanwhile recover the 'normal version'
+    """
+    def __init__(self, in_feats):
+        super(EdgeWeightAndSum, self).__init__()
+        self.in_feats = in_feats
+        self.atom_weighting = nn.Sequential(
+            nn.Linear(in_feats, 1),
+            nn.Tanh()
+        )
+
+    def forward(self, g, edge_feats):
+        with g.local_scope():
+            g.edata['e'] = edge_feats
+            g.edata['w'] = self.atom_weighting(g.edata['e'])
+            # weights = g.edata['w']  # temporary version
+            h_g_sum = dgl.sum_edges(g, 'e', 'w')
+        return h_g_sum  # normal version
+        # return h_g_sum, weights  # temporary version
+
+
+class EdgeWeightedSumAndMax(nn.Module):
+    """
+    for normal use, please delete the 'temporary version' line and meanwhile recover the 'normal version'
+    """
+    def __init__(self, in_feats):
+        super(EdgeWeightedSumAndMax, self).__init__()
+        self.weight_and_sum = EdgeWeightAndSum(in_feats)
+
+    def forward(self, bg, edge_feats):
+        h_g_sum = self.weight_and_sum(bg, edge_feats)  # normal version
+        # h_g_sum, weights = self.weight_and_sum(bg, edge_feats)  # temporary version
+        with bg.local_scope():
+            bg.edata['e'] = edge_feats
+            h_g_max = dgl.max_edges(bg, 'e')
+        h_g = torch.cat([h_g_sum, h_g_max], dim=1)
+        return h_g  # normal version
+        # return h_g, weights  # temporary version
+
 
 class AttentiveGRU1(nn.Module):
 
@@ -186,83 +262,6 @@ class ModifiedAttentiveFPPredictorV2(nn.Module):
     def forward(self, g, node_feats, edge_feats):
         sum_node_feats = self.gnn(g, node_feats, edge_feats)
         return sum_node_feats
-
-
-class DTIConvGraph3(nn.Module):
-    def __init__(self, in_dim, out_dim):
-        super(DTIConvGraph3, self).__init__()
-    # the MPL for update the edge state
-        self.mpl = nn.Sequential(nn.Linear(in_dim, out_dim),
-                                 nn.LeakyReLU(),
-                                 nn.Linear(out_dim, out_dim),
-                                 nn.LeakyReLU(),
-                                 nn.Linear(out_dim, out_dim),
-                                 nn.LeakyReLU())
-
-    def EdgeUpdate(self, edges):
-        return {'e': self.mpl(torch.cat([edges.data['e'], edges.data['m']], dim=1))}
-
-    def forward(self, bg, atom_feats, bond_feats):
-        bg.ndata['h'] = atom_feats
-        bg.edata['e'] = bond_feats
-        with bg.local_scope():
-            bg.apply_edges(dgl.function.u_add_v('h', 'h', 'm'))
-            bg.apply_edges(self.EdgeUpdate)
-            return bg.edata['e']
-
-
-class DTIConvGraph3Layer(nn.Module):
-    def __init__(self, in_dim, out_dim, dropout):  # in_dim = graph module1 output dim + 1
-        super(DTIConvGraph3Layer, self).__init__()
-        # the MPL for update the edge state
-        self.grah_conv = DTIConvGraph3(in_dim, out_dim)
-        self.dropout = nn.Dropout(dropout)
-        self.bn_layer = nn.BatchNorm1d(out_dim)
-
-    def forward(self, bg, atom_feats, bond_feats):
-        new_feats = self.grah_conv(bg, atom_feats, bond_feats)
-        return self.bn_layer(self.dropout(new_feats))
-
-
-class EdgeWeightAndSum(nn.Module):
-    """
-    for normal use, please delete the 'temporary version' line and meanwhile recover the 'normal version'
-    """
-    def __init__(self, in_feats):
-        super(EdgeWeightAndSum, self).__init__()
-        self.in_feats = in_feats
-        self.atom_weighting = nn.Sequential(
-            nn.Linear(in_feats, 1),
-            nn.Tanh()
-        )
-
-    def forward(self, g, edge_feats):
-        with g.local_scope():
-            g.edata['e'] = edge_feats
-            g.edata['w'] = self.atom_weighting(g.edata['e'])
-            # weights = g.edata['w']  # temporary version
-            h_g_sum = dgl.sum_edges(g, 'e', 'w')
-        return h_g_sum  # normal version
-        # return h_g_sum, weights  # temporary version
-
-
-class EdgeWeightedSumAndMax(nn.Module):
-    """
-    for normal use, please delete the 'temporary version' line and meanwhile recover the 'normal version'
-    """
-    def __init__(self, in_feats):
-        super(EdgeWeightedSumAndMax, self).__init__()
-        self.weight_and_sum = EdgeWeightAndSum(in_feats)
-
-    def forward(self, bg, edge_feats):
-        h_g_sum = self.weight_and_sum(bg, edge_feats)  # normal version
-        # h_g_sum, weights = self.weight_and_sum(bg, edge_feats)  # temporary version
-        with bg.local_scope():
-            bg.edata['e'] = edge_feats
-            h_g_max = dgl.max_edges(bg, 'e')
-        h_g = torch.cat([h_g_sum, h_g_max], dim=1)
-        return h_g  # normal version
-        # return h_g, weights  # temporary version
 
 
 class DTIPredictorV4(nn.Module):
