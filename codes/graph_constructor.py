@@ -1,3 +1,5 @@
+# File Name: graph_constructor.py
+# E-mail: jiang_dj@zju.edu.cn
 from rdkit.Chem import rdmolfiles, rdmolops
 from rdkit import Chem
 import dgl
