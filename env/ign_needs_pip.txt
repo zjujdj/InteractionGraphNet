@@ -1,3 +1,4 @@
+# pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 absl-py==0.8.1
 anykeystore==0.2
 apex==0.1
